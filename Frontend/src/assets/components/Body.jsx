@@ -262,7 +262,7 @@ const Body = () => {
       {/* How It Works Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="container mx-auto max-w-7xl">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How CouponTrade Works</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">How CouponSwap Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
               { icon: Tag, title: "List Your Coupons", desc: "Upload your coupon details and set your price instantly." },
