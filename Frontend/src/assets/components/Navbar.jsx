@@ -92,6 +92,12 @@ const Navbar = () => {
               <button className="p-2 hover:bg-gray-100 rounded-full">
                 <User size={20} className="text-gray-600" />
               </button>
+              <button 
+                onClick={() => handleNavigation("cart", "/cart")}
+                className="p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ShoppingCart size={20} className="text-gray-600" />
+              </button>
               <button className="px-5 py-2 text-orange-600 font-medium rounded-full hover:bg-orange-50 transition">
                 Login
               </button>
