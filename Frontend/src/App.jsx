@@ -1,17 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
-import Navbar from './assets/Components/Navbar';
-import Body from './assets/components/Body';
-import Footer from './assets/components/Footer';
-import About from './assets/components/About';
-import Contact from './assets/components/Contact';
-import Signin from './assets/components/Signin';
-import FAQ from './assets/components/FAQ';
-import Terms from './assets/components/Terms';
-import Privacy from './assets/components/Privacy';
-import Browse from './assets/components/Browse';
-import Sell from './assets/components/Sell';
+import Navbar from './assets/components/Navbar.jsx';
+import Body from './assets/components/Body.jsx';
+import Footer from './assets/components/Footer.jsx';
+import About from './assets/components/About.jsx';
+import Contact from './assets/components/Contact.jsx';
+import Signin from './assets/components/Signin.jsx';
+import FAQ from './assets/components/FAQ.jsx';
+import Terms from './assets/components/Terms.jsx';
+import Privacy from './assets/components/Privacy.jsx';
+import Browse from './assets/components/Browse.jsx';
+import Sell from './assets/components/Sell.jsx';
 
 function App() {
   return (

@@ -12,6 +12,7 @@ import {
   Clock,
   CreditCard,
   X,
+  ShoppingCart,
 } from "lucide-react";
 
 const Body = () => {
@@ -23,20 +24,22 @@ const Body = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("card");
+  const [purchasedCoupons, setPurchasedCoupons] = useState([]); 
+  const [copiedCode, setCopiedCode] = useState(null); 
 
   const allCoupons = [
-    { id: 1, platform: "Google Pay", value: 100, price: 80, expires: "15/03/25", seller: "Rahul S.", rating: 4.8, category: "Payment", discount: 20 },
-    { id: 2, platform: "Paytm", value: 50, price: 40, expires: "20/03/25", seller: "Priya M.", rating: 4.9, category: "Payment", discount: 20 },
-    { id: 3, platform: "Google Pay", value: 200, price: 160, expires: "18/03/25", seller: "Amit K.", rating: 4.7, category: "Payment", discount: 20 },
-    { id: 4, platform: "Paytm", value: 150, price: 120, expires: "25/03/25", seller: "Neha P.", rating: 4.6, category: "Payment", discount: 20 },
-    { id: 5, platform: "Google Pay", value: 75, price: 60, expires: "22/03/25", seller: "Vikas R.", rating: 4.8, category: "Payment", discount: 20 },
-    { id: 6, platform: "Paytm", value: 300, price: 240, expires: "30/03/25", seller: "Sonia L.", rating: 4.9, category: "Payment", discount: 20 },
-    { id: 7, platform: "Flipkart", value: 500, price: 400, expires: "28/03/25", seller: "Kiran D.", rating: 4.7, category: "E-commerce", discount: 20 },
-    { id: 8, platform: "Amazon", value: 250, price: 200, expires: "17/03/25", seller: "Anjali T.", rating: 4.8, category: "E-commerce", discount: 20 },
-    { id: 9, platform: "Myntra", value: 300, price: 240, expires: "23/03/25", seller: "Ravi B.", rating: 4.6, category: "Fashion", discount: 20 },
-    { id: 10, platform: "Flipkart", value: 1000, price: 800, expires: "31/03/25", seller: "Meera G.", rating: 4.9, category: "E-commerce", discount: 20 },
-    { id: 11, platform: "Amazon", value: 150, price: 120, expires: "19/03/25", seller: "Suresh V.", rating: 4.7, category: "E-commerce", discount: 20 },
-    { id: 12, platform: "Myntra", value: 400, price: 320, expires: "26/03/25", seller: "Pooja N.", rating: 4.8, category: "Fashion", discount: 20 },
+    { id: 1, platform: "Google Pay", value: 100, price: 80, expires: "15/03/25", seller: "Rahul S.", rating: 4.8, category: "Payment", discount: 20, code: "GPAY100" },
+    { id: 2, platform: "Paytm", value: 50, price: 40, expires: "20/03/25", seller: "Priya M.", rating: 4.9, category: "Payment", discount: 20, code: "PAYTM50" },
+    { id: 3, platform: "Google Pay", value: 200, price: 160, expires: "18/03/25", seller: "Amit K.", rating: 4.7, category: "Payment", discount: 20, code: "GPAY200" },
+    { id: 4, platform: "Paytm", value: 150, price: 120, expires: "25/03/25", seller: "Neha P.", rating: 4.6, category: "Payment", discount: 20, code: "PAYTM150" },
+    { id: 5, platform: "Google Pay", value: 75, price: 60, expires: "22/03/25", seller: "Vikas R.", rating: 4.8, category: "Payment", discount: 20, code: "GPAY75" },
+    { id: 6, platform: "Paytm", value: 300, price: 240, expires: "30/03/25", seller: "Sonia L.", rating: 4.9, category: "Payment", discount: 20, code: "PAYTM300" },
+    { id: 7, platform: "Flipkart", value: 500, price: 400, expires: "28/03/25", seller: "Kiran D.", rating: 4.7, category: "E-commerce", discount: 20, code: "FK500" },
+    { id: 8, platform: "Amazon", value: 250, price: 200, expires: "17/03/25", seller: "Anjali T.", rating: 4.8, category: "E-commerce", discount: 20, code: "AMZ250" },
+    { id: 9, platform: "Myntra", value: 300, price: 240, expires: "23/03/25", seller: "Ravi B.", rating: 4.6, category: "Fashion", discount: 20, code: "MYN300" },
+    { id: 10, platform: "Flipkart", value: 1000, price: 800, expires: "31/03/25", seller: "Meera G.", rating: 4.9, category: "E-commerce", discount: 20, code: "FK1000" },
+    { id: 11, platform: "Amazon", value: 150, price: 120, expires: "19/03/25", seller: "Suresh V.", rating: 4.7, category: "E-commerce", discount: 20, code: "AMZ150" },
+    { id: 12, platform: "Myntra", value: 400, price: 320, expires: "26/03/25", seller: "Pooja N.", rating: 4.8, category: "Fashion", discount: 20, code: "MYN400" },
   ];
 
   const categories = [
@@ -66,9 +69,16 @@ const Body = () => {
   const handlePurchase = () => {
     if (!selectedCoupon) return;
     setTimeout(() => {
-      alert(`Purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon for ₹${selectedCoupon.price}!`);
+      setPurchasedCoupons([...purchasedCoupons, selectedCoupon.id]);
+      alert(`Successfully purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon! Your code: ${selectedCoupon.code}`);
       closePaymentModal();
     }, 1000);
+  };
+
+  const copyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
   };
 
   const filteredCoupons = allCoupons
@@ -99,7 +109,7 @@ const Body = () => {
                 </span>
               </div>
               <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
-              Swap Your Coupons, <span className="text-orange-600">Save More!</span>
+                Swap Your Coupons, <span className="text-orange-600">Save More!</span>
               </h2>
               <p className="text-lg text-gray-700">
                 Trade your Google Pay, Paytm, or Flipkart & other coupons for cash or snag incredible deals.
@@ -238,13 +248,27 @@ const Body = () => {
                       <span className="text-sm text-gray-600">{coupon.rating}</span>
                     </div>
                   </div>
-                  <button
-                    onClick={() => openPaymentModal(coupon)}
-                    className="w-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 shadow-md"
-                  >
-                    <ShoppingBag size={16} />
-                    Buy Now
-                  </button>
+                  {purchasedCoupons.includes(coupon.id) ? (
+                    <div className="space-y-2">
+                      <div className="text-center p-2 bg-green-50 rounded-md">
+                        <p className="text-sm font-medium text-green-600">Code: {coupon.code}</p>
+                      </div>
+                      <button
+                        onClick={() => copyCode(coupon.code)}
+                        className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300"
+                      >
+                        {copiedCode === coupon.code ? "Copied!" : "Copy Code"}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => openPaymentModal(coupon)}
+                      className="w-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 shadow-md"
+                    >
+                      <ShoppingBag size={16} />
+                      Buy Now
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -324,76 +348,156 @@ const Body = () => {
         </div>
       </section>
 
-
       {/* Payment Modal */}
       {showPaymentModal && selectedCoupon && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 relative">
-            <button
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 relative animate-fade-in">
+            <button 
               onClick={closePaymentModal}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
             >
               <X size={24} />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Purchase</h2>
+            
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Complete Your Purchase</h2>
+            
             <div className="mb-6 p-4 bg-orange-50 rounded-xl">
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Coupon:</span>
+                <span className="text-gray-600">Gift Card:</span>
                 <span className="font-semibold">{selectedCoupon.platform} - ₹{selectedCoupon.value}</span>
               </div>
               <div className="flex justify-between mb-2">
                 <span className="text-gray-600">Price:</span>
                 <span className="font-semibold">₹{selectedCoupon.price}</span>
               </div>
+              <div className="flex justify-between pt-2 border-t border-orange-100">
+                <span className="text-gray-600 font-semibold">Total:</span>
+                <span className="font-bold text-orange-600">₹{selectedCoupon.price}</span>
+              </div>
             </div>
+            
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-3">Payment Method</h3>
               <div className="grid grid-cols-3 gap-3">
-                <button
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === "card" ? "border-orange-500 bg-orange-50" : "border-gray-200"} hover:bg-orange-50`}
-                  onClick={() => setPaymentMethod("card")}
+                <button 
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === 'card' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:bg-orange-50 transition duration-300`}
+                  onClick={() => setPaymentMethod('card')}
                 >
-                  <CreditCard size={24} className={paymentMethod === "card" ? "text-orange-500" : "text-gray-400"} />
-                  <span className={`text-sm mt-1 ${paymentMethod === "card" ? "text-orange-500" : "text-gray-500"}`}>Card</span>
+                  <CreditCard size={24} className={paymentMethod === 'card' ? 'text-orange-500' : 'text-gray-400'} />
+                  <span className={`text-sm mt-1 ${paymentMethod === 'card' ? 'text-orange-500 font-medium' : 'text-gray-500'}`}>Card</span>
                 </button>
-                <button
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === "upi" ? "border-orange-500 bg-orange-50" : "border-gray-200"} hover:bg-orange-50`}
-                  onClick={() => setPaymentMethod("upi")}
+                <button 
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === 'upi' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:bg-orange-50 transition duration-300`}
+                  onClick={() => setPaymentMethod('upi')}
                 >
-                  <img src="/assets/upi-icon.png" alt="UPI" className="w-6 h-6" />
-                  <span className={`text-sm mt-1 ${paymentMethod === "upi" ? "text-orange-500" : "text-gray-500"}`}>UPI</span>
+                  <img 
+                    src="/assets/upi-icon.png" 
+                    alt="UPI" 
+                    className="w-6 h-6"
+                    onError={(e) => e.target.src = '/assets/default-payment-icon.png'}
+                  />
+                  <span className={`text-sm mt-1 ${paymentMethod === 'upi' ? 'text-orange-500 font-medium' : 'text-gray-500'}`}>UPI</span>
                 </button>
-                <button
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === "wallet" ? "border-orange-500 bg-orange-50" : "border-gray-200"} hover:bg-orange-50`}
-                  onClick={() => setPaymentMethod("wallet")}
+                <button 
+                  className={`flex flex-col items-center justify-center p-3 rounded-xl border ${paymentMethod === 'wallet' ? 'border-orange-500 bg-orange-50' : 'border-gray-200'} hover:bg-orange-50 transition duration-300`}
+                  onClick={() => setPaymentMethod('wallet')}
                 >
-                  <ShoppingBag size={24} className={paymentMethod === "wallet" ? "text-orange-500" : "text-gray-400"} />
-                  <span className={`text-sm mt-1 ${paymentMethod === "wallet" ? "text-orange-500" : "text-gray-500"}`}>Wallet</span>
+                  <ShoppingCart size={24} className={paymentMethod === 'wallet' ? 'text-orange-500' : 'text-gray-400'} />
+                  <span className={`text-sm mt-1 ${paymentMethod === 'wallet' ? 'text-orange-500 font-medium' : 'text-gray-500'}`}>Wallet</span>
                 </button>
               </div>
             </div>
-            {paymentMethod === "wallet" && (
+            
+            {paymentMethod === 'card' && (
+              <div className="mb-6 space-y-4">
+                <div>
+                  <label className="block text-gray-700 text-sm font-medium mb-1">Card Number</label>
+                  <input 
+                    type="text" 
+                    placeholder="1234 5678 9012 3456" 
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">Expiry Date</label>
+                    <input 
+                      type="text" 
+                      placeholder="MM/YY" 
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 text-sm font-medium mb-1">CVV</label>
+                    <input 
+                      type="text" 
+                      placeholder="123" 
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {paymentMethod === 'upi' && (
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-medium mb-1">UPI ID</label>
+                <input 
+                  type="text" 
+                  placeholder="name@upi" 
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                />
+              </div>
+            )}
+            
+            {paymentMethod === 'wallet' && (
               <div className="mb-6 grid grid-cols-3 gap-3">
-                <button className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 flex flex-col items-center">
-                  <img src="/assets/phonepe-logo.png" alt="PhonePe" className="w-8 h-8 mb-1" />
-                  <span className="text-sm text-gray-700">PhonePe</span>
+                <button 
+                  className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
+                >
+                  <img 
+                    src="/assets/phonepe-logo.png" 
+                    alt="PhonePe" 
+                    className="w-8 h-8 mb-1"
+                    onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
+                  />
+                  <span className="text-center text-sm font-medium text-gray-700">PhonePe</span>
                 </button>
-                <button className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 flex flex-col items-center">
-                  <img src="/assets/paytm-logo.png" alt="Paytm" className="w-8 h-8 mb-1" />
-                  <span className="text-sm text-gray-700">Paytm</span>
+                <button 
+                  className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
+                >
+                  <img 
+                    src="/assets/paytm-logo.png" 
+                    alt="Paytm" 
+                    className="w-8 h-8 mb-1"
+                    onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
+                  />
+                  <span className="text-center text-sm font-medium text-gray-700">Paytm</span>
                 </button>
-                <button className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 flex flex-col items-center">
-                  <img src="/assets/googlepay-logo.png" alt="Google Pay" className="w-8 h-8 mb-1" />
-                  <span className="text-sm text-gray-700">Google Pay</span>
+                <button 
+                  className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
+                >
+                  <img 
+                    src="/assets/googlepay-logo.png" 
+                    alt="Google Pay" 
+                    className="w-8 h-8 mb-1"
+                    onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
+                  />
+                  <span className="text-center text-sm font-medium text-gray-700">Google Pay</span>
                 </button>
               </div>
             )}
-            <button
+            
+            <button 
               onClick={handlePurchase}
-              className="w-full bg-gradient-to-r from-orange-600 to-amber-500 text-white font-medium py-3 rounded-xl hover:from-orange-700 hover:to-amber-600 transition-all shadow-md"
+              className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-xl font-bold hover:from-orange-600 hover:to-amber-600 transition duration-300 shadow-lg flex items-center justify-center"
             >
               Pay ₹{selectedCoupon.price}
             </button>
+            
+            <p className="text-xs text-gray-500 text-center mt-4">
+              By completing this purchase, you agree to our Terms of Service and Privacy Policy.
+            </p>
           </div>
         </div>
       )}
