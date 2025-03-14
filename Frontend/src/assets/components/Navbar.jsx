@@ -99,10 +99,10 @@ const Navbar = () => {
                 <ShoppingCart size={20} className="text-gray-600" />
               </button>
               <button className="px-5 py-2 text-orange-600 font-medium rounded-full hover:bg-orange-50 transition">
-                Login
+              <Link to="/Login">Login</Link>
               </button>
               <button className="px-5 py-2 bg-orange-600 text-white font-medium rounded-full hover:bg-orange-700 transition shadow-md">
-                Sign Up
+                <Link to="/Signin">Sign Up</Link>
               </button>
             </div>
             <div className="md:hidden flex items-center">
