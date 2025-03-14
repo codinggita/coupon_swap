@@ -47,7 +47,6 @@ const Navbar = () => {
     { tab: "browse", label: "Browse", to: "/browse" },
     { tab: "sell", label: "Sell", to: "/sell" },
     { tab: "faq", label: "FAQ", to: "/faq" },
-    { tab: "cart", icon: ShoppingCart, label: "Cart", path: "/cart" },
     { tab: "about", label: "About Us", to: "/about" },
   ];
   const bottomNavItems = [
