@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const SellCoupon = () => {
   const [formData, setFormData] = useState({
     platform: '',
-    customPlatform: '', 
+    customPlatform: '',
     couponCode: '',
     valueRs: '',
     valuePercent: '',
     expiryDate: '',
     sellingPrice: '',
+    minimumBuyPrice: '', // Added new field
     description: '',
   });
   const [previewImage, setPreviewImage] = useState(null);
-
+  const navigate = useNavigate();
   const platforms = ['Google Pay', 'Paytm', 'Amazon Pay', 'PhonePe', 'Flipkart', 'Other'];
 
   const handleInputChange = (e) => {
@@ -37,22 +38,23 @@ const SellCoupon = () => {
       formData.couponCode &&
       (formData.valueRs || formData.valuePercent) &&
       formData.expiryDate &&
-      formData.sellingPrice
+      formData.sellingPrice &&
+      formData.minimumBuyPrice // Added validation for new field
     ) {
       console.log('Coupon listed:', { ...formData, platform: platformToSubmit });
       alert('Coupon listed successfully!');
+      navigate('/CoupenVerification');
     } else {
-      alert('Please fill all required fields (Value can be ₹ or %)!');
+      alert('Please fill all required fields (Value can be ₹ or %, Minimum Buy Price is required)!');
     }
   };
 
- 
   const calculateDiscount = () => {
     if (formData.sellingPrice && formData.valueRs) {
       const discount = Math.round((1 - formData.sellingPrice / formData.valueRs) * 100);
       return `${discount}% off`;
     } else if (formData.valuePercent) {
-      return `${formData.valuePercent}% off`; 
+      return `${formData.valuePercent}% off`;
     }
     return 'N/A';
   };
@@ -60,7 +62,6 @@ const SellCoupon = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-200 via-yellow-100 to-orange-200 flex items-center justify-center p-4">
       <div className="w-full max-w-[360px] sm:max-w-md md:max-w-lg lg:max-w-4xl flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
-       
         <div className="w-full lg:w-1/2 bg-gradient-to-br from-orange-400 to-yellow-400 p-4 sm:p-6 flex flex-col items-center justify-center relative">
           <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-md animate-bounce-slow">
             Sell Your Coupon!
@@ -77,13 +78,12 @@ const SellCoupon = () => {
             <path d="M50 10 A40 40 0 0 1 90 50" fill="none" stroke="#fff" strokeWidth="4" />
           </svg>
         </div>
-
-        
         <div className="w-full lg:w-1/2 p-4 sm:p-6 bg-white flex flex-col relative">
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-         
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Platform <span className="text-red-500">*</span></label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Platform <span className="text-red-500">*</span>
+              </label>
               <select
                 name="platform"
                 value={formData.platform}
@@ -111,9 +111,10 @@ const SellCoupon = () => {
               )}
             </div>
 
-           
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Coupon Code <span className="text-red-500">*</span></label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Coupon Code <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="couponCode"
@@ -125,12 +126,15 @@ const SellCoupon = () => {
               />
             </div>
 
-           
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Value <span className="text-red-500">*</span> (₹ or %)</label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Value <span className="text-red-500">*</span> (₹ or %)
+              </label>
               <div className="flex gap-2 sm:gap-3">
                 <div className="relative flex-1">
-                  <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">₹</span>
+                  <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">
+                    ₹
+                  </span>
                   <input
                     type="number"
                     name="valueRs"
@@ -141,7 +145,9 @@ const SellCoupon = () => {
                   />
                 </div>
                 <div className="relative flex-1">
-                  <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">%</span>
+                  <span className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">
+                    %
+                  </span>
                   <input
                     type="number"
                     name="valuePercent"
@@ -154,11 +160,14 @@ const SellCoupon = () => {
               </div>
             </div>
 
-          
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Selling Price <span className="text-red-500">*</span></label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Selling Price <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
-                <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">₹</span>
+                <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">
+                  ₹
+                </span>
                 <input
                   type="number"
                   name="sellingPrice"
@@ -171,9 +180,30 @@ const SellCoupon = () => {
               </div>
             </div>
 
-           
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Expiry Date <span className="text-red-500">*</span></label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Minimum Buy Price <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <span className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm">
+                  ₹
+                </span>
+                <input
+                  type="number"
+                  name="minimumBuyPrice"
+                  value={formData.minimumBuyPrice}
+                  onChange={handleInputChange}
+                  placeholder="1000"
+                  className="w-full p-2 sm:p-3 pl-6 sm:pl-8 rounded-lg border border-orange-300 bg-orange-50 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-xs sm:text-sm outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Expiry Date <span className="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 name="expiryDate"
@@ -185,7 +215,6 @@ const SellCoupon = () => {
               />
             </div>
 
-          
             <div>
               <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Description (optional)</label>
               <textarea
@@ -197,9 +226,8 @@ const SellCoupon = () => {
               />
             </div>
 
-         
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Screenshot (optional)</label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Screenshot</label>
               <label className="w-full p-2 sm:p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-50/50 hover:bg-orange-100 flex items-center justify-center cursor-pointer">
                 <input
                   type="file"
@@ -230,7 +258,6 @@ const SellCoupon = () => {
               )}
             </div>
 
-          
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-orange-400 to-yellow-400 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:from-orange-500 hover:to-yellow-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
@@ -242,7 +269,6 @@ const SellCoupon = () => {
             </button>
           </form>
 
-          {/* Live Preview */}
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-orange-50 rounded-lg shadow-inner">
             <h3 className="text-sm sm:text-base font-semibold text-orange-600">Preview</h3>
             <div className="mt-2 text-xs sm:text-sm text-gray-700 space-y-1">
@@ -257,6 +283,10 @@ const SellCoupon = () => {
               <p>
                 <span className="font-semibold text-orange-600">Price:</span>{' '}
                 {formData.sellingPrice ? `₹${formData.sellingPrice}` : 'N/A'}
+              </p>
+              <p>
+                <span className="font-semibold text-orange-600">Min. Buy:</span>{' '}
+                {formData.minimumBuyPrice ? `₹${formData.minimumBuyPrice}` : 'N/A'}
               </p>
               <p>
                 <span className="font-semibold text-orange-600">Expires:</span> {formData.expiryDate || 'N/A'}
