@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     emailPhone: '',
     password: ''
   });
-  const navigate = useNavigate(); 
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -17,40 +19,41 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setError('');
+
     try {
-      if (formData.emailPhone && formData.password) {
-        console.log('Login submitted:', formData);
-        navigate('/'); 
-        setFormData({
-          emailPhone: '',
-          password: ''
-        });
-      } else {
-        alert('Please fill in all fields');
+      const response = await axios.post('http://localhost:5000/api/auth/login', formData, {
+        withCredentials: true
+      });
+
+      if (response.status === 200) {
+        console.log('Login successful:', response.data);
+        navigate('/');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed. Please try again.');
+      if (error.response) {
+        setError(error.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-orange-50 to-orange-100">
       <div className="bg-white p-6 sm:p-8 rounded-xl shadow-xl w-full max-w-md transform transition-all hover:shadow-2xl">
-        <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 text-center mb-2 animate-fade-in-down">
+        <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 text-center mb-2">
           Welcome Back!
         </h1>
         <p className="text-gray-600 text-center mb-6 sm:mb-8 text-sm sm:text-base">
           Log in to access your coupons and deals.
         </p>
 
+        {error && <div className="text-red-600 text-center mb-4">{error}</div>}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label
-              htmlFor="emailPhone"
-              className="block text-gray-700 font-medium mb-2 text-sm sm:text-base"
-            >
+            <label htmlFor="emailPhone" className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Email or Phone
             </label>
             <input
@@ -66,10 +69,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-gray-700 font-medium mb-2 text-sm sm:text-base"
-            >
+            <label htmlFor="password" className="block text-gray-700 font-medium mb-2 text-sm sm:text-base">
               Password
             </label>
             <input
@@ -94,31 +94,13 @@ const Login = () => {
 
         <p className="text-center mt-6 text-gray-600 text-sm sm:text-base">
           Don't have an account?{' '}
-          <a href="/signup" className="text-orange-500 font-medium hover:underline transition-colors">
+          <a href="/signin" className="text-orange-500 font-medium hover:underline transition-colors">
             Sign up here
           </a>
         </p>
       </div>
-      <style jsx>{`
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in-down {
-          animation: fadeInDown 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 };
 
 export default Login;
-
-
-
