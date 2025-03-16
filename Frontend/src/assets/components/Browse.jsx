@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Search, Tag, Clock, Filter, ArrowRight, Heart, DollarSign, CreditCard, ShoppingCart, X } from 'lucide-react';
+import { Search, Tag, Clock, Filter, ArrowRight, Heart, DollarSign, CreditCard, ShoppingCart, X, ShoppingBag, Star } from 'lucide-react';
 
 const CouponPage = () => {
   const [platform, setPlatform] = useState('All');
@@ -14,18 +13,16 @@ const CouponPage = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('card');
-
-  // Sample coupon data
+  const [copiedCode, setCopiedCode] = useState(null);
   const initialCoupons = [
-    { id: 1, platform: 'Amazon', value: 1000, price: 900, expires: '15/03/25', code: 'AMZN1000', description: '₹1000 off on shopping', category: 'Shopping', cards: 10 },
-    { id: 2, platform: 'Myntra', value: 700, price: 600, expires: '15/03/25', code: 'MYN700', description: '₹700 off on fashion', category: 'Shopping', cards: 145 },
-    { id: 3, platform: 'Zingoy', value: 200, price: 150, expires: '25/03/25', code: 'ZIN200', description: '₹200 off on gift cards', category: 'Shopping', cards: 3 },
-    { id: 4, platform: 'PhonePe', value: 100, price: 80, expires: '20/03/25', code: 'PPE100', description: '₹100 off on payments', category: 'Shopping', cards: 2 },
-    { id: 5, platform: 'Dominos', value: 300, price: 200, expires: '25/03/25', code: 'DOM300', description: '₹300 off on pizza orders', category: 'Food & Dining', cards: 202 },
-    { id: 6, platform: 'BookMyShow', value: 500, price: 400, expires: '15/04/25', code: 'BMS500', description: '₹500 off on movie tickets', category: 'Entertainment', cards: 71 },
+    { id: 1, platform: 'Amazon', value: 1000, price: 900, expires: '15/03/25', code: 'AMZN1000', description: '₹1000 off on shopping', category: 'Shopping', cards: 10, seller: 'Rahul S.', rating: 4.8, discount: 10 },
+    { id: 2, platform: 'Myntra', value: 700, price: 600, expires: '15/03/25', code: 'MYN700', description: '₹700 off on fashion', category: 'Shopping', cards: 145, seller: 'Priya M.', rating: 4.9, discount: 14 },
+    { id: 3, platform: 'Zingoy', value: 200, price: 150, expires: '25/03/25', code: 'ZIN200', description: '₹200 off on gift cards', category: 'Shopping', cards: 3, seller: 'Amit K.', rating: 4.7, discount: 25 },
+    { id: 4, platform: 'PhonePe', value: 100, price: 80, expires: '20/03/25', code: 'PPE100', description: '₹100 off on payments', category: 'Shopping', cards: 2, seller: 'Neha P.', rating: 4.6, discount: 20 },
+    { id: 5, platform: 'Dominos', value: 300, price: 200, expires: '25/03/25', code: 'DOM300', description: '₹300 off on pizza orders', category: 'Food & Dining', cards: 202, seller: 'Vikas R.', rating: 4.8, discount: 33 },
+    { id: 6, platform: 'BookMyShow', value: 500, price: 400, expires: '15/04/25', code: 'BMS500', description: '₹500 off on movie tickets', category: 'Entertainment', cards: 71, seller: 'Sonia L.', rating: 4.9, discount: 20 },
   ];
 
-  // Filter and sort coupons
   const getFilteredAndSortedCoupons = () => {
     let filtered = initialCoupons
       .filter(coupon => platform === 'All' || coupon.platform === platform)
@@ -46,6 +43,8 @@ const CouponPage = () => {
       case 'Expiring Soon': return filtered.sort((a, b) => new Date(a.expires) - new Date(b.expires));
       case 'Newest': return filtered.sort((a, b) => b.id - a.id);
       case 'Best Value': return filtered.sort((a, b) => (b.value - b.price) - (a.value - a.price));
+      case 'Price': return filtered.sort((a, b) => a.price - b.price);
+      case 'Rating': return filtered.sort((a, b) => b.rating - a.rating);
       default: return filtered;
     }
   };
@@ -60,7 +59,6 @@ const CouponPage = () => {
       : [...favorites, id]);
   };
 
-  const [copiedCode, setCopiedCode] = useState(null);
   const copyCode = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
@@ -80,11 +78,10 @@ const CouponPage = () => {
 
   const handlePurchase = () => {
     if (!selectedCoupon) return;
-    
     setTimeout(() => {
       setPurchasedCoupons([...purchasedCoupons, selectedCoupon.id]);
+      alert(`Successfully purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon! Your code: ${selectedCoupon.code}`);
       closePaymentModal();
-      alert(`Successfully purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon for ₹${selectedCoupon.price}! Your code is now available.`);
     }, 1500);
   };
 
@@ -207,8 +204,8 @@ const CouponPage = () => {
 
         {/* Results and Sorting */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-          <h2 className="text-4xl font-extrabold text-gray-900">
-            {filteredCoupons.length} Gift Cards Available
+          <h2 className="text-3xl font-bold text-gray-900">
+            Discover Amazing Deals ({filteredCoupons.length} available)
           </h2>
           <div className="mt-4 md:mt-0 flex items-center gap-3">
             <span className="text-gray-600 text-lg">Sort by:</span>
@@ -220,77 +217,82 @@ const CouponPage = () => {
               <option>Best Value</option>
               <option>Expiring Soon</option>
               <option>Newest</option>
+              <option>Price</option>
+              <option>Rating</option>
             </select>
           </div>
         </div>
 
-        {/* Simplified Coupons Grid */}
+        {/* Coupons Grid with Body's Cart UI */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {displayedCoupons.map((coupon) => (
             <div 
               key={coupon.id} 
-              className="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition duration-300"
+              className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 border border-gray-100"
             >
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">{coupon.platform}</h3>
-                  <p className="text-sm text-gray-600">{coupon.description}</p>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 mr-3">
+                    <Tag size={22} />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg text-gray-900">{coupon.platform}</h3>
+                    <p className="text-sm text-gray-500 flex items-center gap-1">
+                      <Clock size={14} /> Expires: {coupon.expires}
+                    </p>
+                  </div>
                 </div>
-                <button 
-                  onClick={() => toggleFavorite(coupon.id)}
-                  className="text-gray-400 hover:text-red-500 transition duration-300"
-                >
-                  <Heart 
-                    size={20} 
-                    fill={favorites.includes(coupon.id) ? "#ef4444" : "none"} 
-                    color={favorites.includes(coupon.id) ? "#ef4444" : "currentColor"}
+                <button onClick={() => toggleFavorite(coupon.id)} className="p-1 hover:text-red-500">
+                  <Heart
+                    size={22}
+                    className={favorites.includes(coupon.id) ? "text-red-500 fill-current" : "text-gray-400"}
                   />
                 </button>
               </div>
-
-              <div className="flex items-center text-sm text-gray-500 mb-3">
-                <Clock size={16} className="mr-2" />
-                <span>Expires: {coupon.expires}</span>
-              </div>
-
-              <div className="flex items-center text-sm text-gray-500 mb-3">
-                <Tag size={16} className="mr-2" />
-                <span>{coupon.cards} Left</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="text-orange-600 font-bold text-2xl">₹{coupon.price}</span>
-                  <span className="text-sm text-gray-500 ml-2 line-through">₹{coupon.value}</span>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Value</span>
+                  <span className="font-bold text-gray-900">₹{coupon.value}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Price</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-orange-600">₹{coupon.price}</span>
+                    <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                      {coupon.discount}% OFF
+                    </span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600">Seller</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-gray-700">{coupon.seller}</span>
+                    <Star size={14} className="text-yellow-400 fill-current" />
+                    <span className="text-sm text-gray-600">{coupon.rating}</span>
+                  </div>
                 </div>
                 {purchasedCoupons.includes(coupon.id) ? (
-                  <button 
-                    onClick={() => copyCode(coupon.code)}
-                    className="px-4 py-1 bg-green-100 text-green-700 rounded-md text-sm font-medium hover:bg-green-200 transition duration-300"
-                  >
-                    {copiedCode === coupon.code ? "Copied!" : "Show Code"}
-                  </button>
+                  <div className="space-y-2">
+                    <div className="text-center p-2 bg-green-50 rounded-md">
+                      <p className="text-sm font-medium text-green-600">Code: {coupon.code}</p>
+                    </div>
+                    <button
+                      onClick={() => copyCode(coupon.code)}
+                      className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300"
+                    >
+                      {copiedCode === coupon.code ? "Copied!" : "Copy Code"}
+                    </button>
+                  </div>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => openPaymentModal(coupon)}
-                    className="px-4 py-1 bg-orange-500 text-white rounded-md text-sm font-medium hover:bg-orange-600 transition duration-300 flex items-center"
+                    className="w-full bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center gap-2 shadow-md"
                   >
-                    <ShoppingCart size={16} className="mr-1" />
-                    Buy
+                    <ShoppingBag size={16} />
+                    Buy Now
                   </button>
                 )}
               </div>
-              {purchasedCoupons.includes(coupon.id) && (
-                <div className="mt-3 text-center">
-                  <p className="text-sm font-medium text-green-600 bg-green-50 p-1 rounded">Code: {coupon.code}</p>
-                  <button 
-                    onClick={() => copyCode(coupon.code)}
-                    className="mt-1 px-3 py-1 bg-gray-200 text-gray-800 rounded-md text-xs hover:bg-gray-300 transition duration-300"
-                  >
-                    Copy
-                  </button>
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -330,7 +332,8 @@ const CouponPage = () => {
             </div>
           </div>
         </div>
-        </div>
+      </div>
+
       {/* Payment Modal */}
       {showPaymentModal && selectedCoupon && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
