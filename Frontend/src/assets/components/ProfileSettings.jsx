@@ -6,6 +6,10 @@ const ProfileSettings = () => {
     name: "",
     email: "",
     phone: "",
+    bankName: "",
+    accountNumber: "",
+    ifscCode: "",
+    accountHolderName: "",
     bankUpi: "",
     address: "",
     password: "",
@@ -47,6 +51,13 @@ const ProfileSettings = () => {
     else if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = "Phone must be a 10-digit number.";
     if (formData.password && formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters.";
+    // Optional bank details validation
+    if (formData.bankName && !formData.accountNumber)
+      newErrors.accountNumber = "Account Number is required if Bank Name is provided.";
+    if (formData.accountNumber && !formData.bankName)
+      newErrors.bankName = "Bank Name is required if Account Number is provided.";
+    if (formData.ifscCode && !/^[A-Za-z]{4}0[A-Za-z0-9]{6}$/.test(formData.ifscCode))
+      newErrors.ifscCode = "Invalid IFSC Code format (e.g., SBIN0001234).";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -71,6 +82,10 @@ const ProfileSettings = () => {
       name: "",
       email: "",
       phone: "",
+      bankName: "",
+      accountNumber: "",
+      ifscCode: "",
+      accountHolderName: "",
       bankUpi: "",
       address: "",
       password: "",
@@ -227,13 +242,116 @@ const ProfileSettings = () => {
                   )}
                 </div>
 
+                {/* Bank Name Field */}
+                <div>
+                  <label
+                    htmlFor="bankName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Bank Name
+                  </label>
+                  <input
+                    type="text"
+                    id="bankName"
+                    name="bankName"
+                    value={formData.bankName}
+                    onChange={handleChange}
+                    placeholder="e.g., State Bank of India"
+                    aria-invalid={errors.bankName ? "true" : "false"}
+                    aria-describedby={errors.bankName ? "bankName-error" : undefined}
+                    className={`w-full p-3 rounded-lg border ${
+                      errors.bankName ? "border-red-500" : "border-gray-300"
+                    } focus:ring-2 focus:ring-orange-600 focus:border-orange-600 outline-none transition duration-300`}
+                  />
+                  {errors.bankName && (
+                    <p id="bankName-error" className="text-xs text-red-500 mt-1">
+                      {errors.bankName}
+                    </p>
+                  )}
+                </div>
+
+                {/* Account Number Field */}
+                <div>
+                  <label
+                    htmlFor="accountNumber"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Account Number
+                  </label>
+                  <input
+                    type="text"
+                    id="accountNumber"
+                    name="accountNumber"
+                    value={formData.accountNumber}
+                    onChange={handleChange}
+                    placeholder="e.g., 123456789012"
+                    aria-invalid={errors.accountNumber ? "true" : "false"}
+                    aria-describedby={errors.accountNumber ? "accountNumber-error" : undefined}
+                    className={`w-full p-3 rounded-lg border ${
+                      errors.accountNumber ? "border-red-500" : "border-gray-300"
+                    } focus:ring-2 focus:ring-orange-600 focus:border-orange-600 outline-none transition duration-300`}
+                  />
+                  {errors.accountNumber && (
+                    <p id="accountNumber-error" className="text-xs text-red-500 mt-1">
+                      {errors.accountNumber}
+                    </p>
+                  )}
+                </div>
+
+                {/* IFSC Code Field */}
+                <div>
+                  <label
+                    htmlFor="ifscCode"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    IFSC Code
+                  </label>
+                  <input
+                    type="text"
+                    id="ifscCode"
+                    name="ifscCode"
+                    value={formData.ifscCode}
+                    onChange={handleChange}
+                    placeholder="e.g., SBIN0001234"
+                    aria-invalid={errors.ifscCode ? "true" : "false"}
+                    aria-describedby={errors.ifscCode ? "ifscCode-error" : undefined}
+                    className={`w-full p-3 rounded-lg border ${
+                      errors.ifscCode ? "border-red-500" : "border-gray-300"
+                    } focus:ring-2 focus:ring-orange-600 focus:border-orange-600 outline-none transition duration-300`}
+                  />
+                  {errors.ifscCode && (
+                    <p id="ifscCode-error" className="text-xs text-red-500 mt-1">
+                      {errors.ifscCode}
+                    </p>
+                  )}
+                </div>
+
+                {/* Account Holder Name Field */}
+                <div>
+                  <label
+                    htmlFor="accountHolderName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Account Holder Name
+                  </label>
+                  <input
+                    type="text"
+                    id="accountHolderName"
+                    name="accountHolderName"
+                    value={formData.accountHolderName}
+                    onChange={handleChange}
+                    placeholder="e.g., John Doe"
+                    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-orange-600 outline-none transition duration-300"
+                  />
+                </div>
+
                 {/* Bank/UPI Details Field */}
                 <div>
                   <label
                     htmlFor="bankUpi"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Bank/UPI Details
+                    UPI ID (Optional)
                   </label>
                   <input
                     type="text"
@@ -241,7 +359,7 @@ const ProfileSettings = () => {
                     name="bankUpi"
                     value={formData.bankUpi}
                     onChange={handleChange}
-                    placeholder="For payouts"
+                    placeholder="e.g., john@upi"
                     className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-orange-600 outline-none transition duration-300"
                   />
                 </div>
@@ -372,3 +490,6 @@ const ProfileSettings = () => {
 };
 
 export default ProfileSettings;
+
+
+
