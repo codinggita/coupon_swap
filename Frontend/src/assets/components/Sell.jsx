@@ -39,7 +39,7 @@ const SellCoupon = () => {
       (formData.valueRs || formData.valuePercent) &&
       formData.expiryDate &&
       formData.sellingPrice &&
-      formData.minimumBuyPrice // Added validation for new field
+      formData.minimumBuyPrice
     ) {
       console.log('Coupon listed:', { ...formData, platform: platformToSubmit });
       alert('Coupon listed successfully!');
