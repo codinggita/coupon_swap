@@ -9,8 +9,9 @@ const SellCoupon = () => {
     valuePercent: '',
     expiryDate: '',
     sellingPrice: '',
-    minimumBuyPrice: '', // Added new field
+    minimumBuyPrice: '',
     description: '',
+    sellerName: '',
   });
   const [previewImage, setPreviewImage] = useState(null);
   const navigate = useNavigate();
@@ -110,7 +111,17 @@ const SellCoupon = () => {
                 />
               )}
             </div>
-
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Seller Name</label>
+              <input
+                type="text"
+                name="sellerName"
+                value={formData.sellerName}
+                onChange={handleInputChange}
+                placeholder="e.g., John Doe"
+                className="w-full p-2 sm:p-3 rounded-lg border border-orange-300 bg-orange-50 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-xs sm:text-sm outline-none"
+              />
+            </div>
             <div>
               <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
                 Coupon Code <span className="text-red-500">*</span>
@@ -228,7 +239,7 @@ const SellCoupon = () => {
 
             <div>
               <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Screenshot</label>
-              <label className="w-full p-2 sm:p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-50/50 hover:bg-orange-100 flex items-center justify-center cursor-pointer">
+              <label className="w-full p-2 sm:p-3 border-2 border-dashed border-orange-300 bg-orange-50/50 hover:bg-orange-100 flex items-center justify-center cursor-pointer">
                 <input
                   type="file"
                   accept="image/*"
@@ -272,6 +283,9 @@ const SellCoupon = () => {
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-orange-50 rounded-lg shadow-inner">
             <h3 className="text-sm sm:text-base font-semibold text-orange-600">Preview</h3>
             <div className="mt-2 text-xs sm:text-sm text-gray-700 space-y-1">
+              <p>
+                <span className="font-semibold text-orange-600">Seller:</span> {formData.sellerName || 'N/A'}
+              </p>
               <p>
                 <span className="font-semibold text-orange-600">Platform:</span>{' '}
                 {formData.platform === 'Other' ? formData.customPlatform || 'N/A' : formData.platform || 'N/A'}
