@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const SellCoupon = () => {
   const [formData, setFormData] = useState({
     platform: '',
@@ -9,18 +10,19 @@ const SellCoupon = () => {
     valuePercent: '',
     expiryDate: '',
     sellingPrice: '',
-    minimumBuyPrice: '', // Added new field
+    minimumBuyPrice: '',
     description: '',
+    sellerName: '',
   });
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const platforms = ['Google Pay', 'Paytm', 'Amazon Pay', 'PhonePe', 'Flipkart', 'Other'];
+  const platforms = ['fastrack', 'Amazon Pay', 'Zomato', 'Flipkart', 'Nike', 'Other'];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -29,10 +31,24 @@ const SellCoupon = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    
     const platformToSubmit = formData.platform === 'Other' ? formData.customPlatform : formData.platform;
+    const couponData = {
+      platform: platformToSubmit,
+      couponCode: formData.couponCode,
+      valueRs: formData.valueRs || null,
+      valuePercent: formData.valuePercent || null,
+      expiryDate: formData.expiryDate,
+      sellingPrice: formData.sellingPrice,
+      minimumBuyPrice: formData.minimumBuyPrice,
+      description: formData.description,
+      sellerName: formData.sellerName,
+      image: previewImage || null,
+    };
+
     if (
       platformToSubmit &&
       formData.couponCode &&
@@ -41,14 +57,24 @@ const SellCoupon = () => {
       formData.sellingPrice &&
       formData.minimumBuyPrice
     ) {
-      console.log('Coupon listed:', { ...formData, platform: platformToSubmit });
-      alert('Coupon listed successfully!');
-      navigate('/CoupenVerification');
+      try {
+        const response = await axios.post('http://localhost:5000/api/coupon', couponData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('Coupon listed:', response.data);
+        alert('Coupon listed successfully!');
+        navigate('/CoupenVerification');
+      } catch (error) {
+        console.error('Error listing coupon:', error);
+        alert('Failed to list coupon. Please try again.');
+      }
     } else {
       alert('Please fill all required fields (Value can be ₹ or %, Minimum Buy Price is required)!');
     }
+    setLoading(false);
   };
-
   const calculateDiscount = () => {
     if (formData.sellingPrice && formData.valueRs) {
       const discount = Math.round((1 - formData.sellingPrice / formData.valueRs) * 100);
@@ -58,7 +84,6 @@ const SellCoupon = () => {
     }
     return 'N/A';
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-200 via-yellow-100 to-orange-200 flex items-center justify-center p-4">
       <div className="w-full max-w-[360px] sm:max-w-md md:max-w-lg lg:max-w-4xl flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -110,7 +135,17 @@ const SellCoupon = () => {
                 />
               )}
             </div>
-
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Seller Name</label>
+              <input
+                type="text"
+                name="sellerName"
+                value={formData.sellerName}
+                onChange={handleInputChange}
+                placeholder="e.g., John Doe"
+                className="w-full p-2 sm:p-3 rounded-lg border border-orange-300 bg-orange-50 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-xs sm:text-sm outline-none"
+              />
+            </div>
             <div>
               <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
                 Coupon Code <span className="text-red-500">*</span>
@@ -228,7 +263,7 @@ const SellCoupon = () => {
 
             <div>
               <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Screenshot</label>
-              <label className="w-full p-2 sm:p-3 border-2 border-dashed border-orange-400 rounded-lg bg-orange-50/50 hover:bg-orange-100 flex items-center justify-center cursor-pointer">
+              <label className="w-full p-2 sm:p-3 border-2 border-dashed border-orange-300 bg-orange-50/50 hover:bg-orange-100 flex items-center justify-center cursor-pointer">
                 <input
                   type="file"
                   accept="image/*"
@@ -260,18 +295,26 @@ const SellCoupon = () => {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-orange-400 to-yellow-400 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:from-orange-500 hover:to-yellow-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+              disabled={loading}
+              className={`w-full bg-gradient-to-r from-orange-400 to-yellow-400 text-white py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base hover:from-orange-500 hover:to-yellow-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 ${
+                loading ? 'opacity-70 cursor-not-allowed' : ''
+              }`}
             >
-              List Coupon
-              <svg className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
+              {loading ? 'Listing...' : 'List Coupon'}
+              {!loading && (
+                <svg className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
             </button>
           </form>
 
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-orange-50 rounded-lg shadow-inner">
             <h3 className="text-sm sm:text-base font-semibold text-orange-600">Preview</h3>
             <div className="mt-2 text-xs sm:text-sm text-gray-700 space-y-1">
+              <p>
+                <span className="font-semibold text-orange-600">Seller:</span> {formData.sellerName || 'N/A'}
+              </p>
               <p>
                 <span className="font-semibold text-orange-600">Platform:</span>{' '}
                 {formData.platform === 'Other' ? formData.customPlatform || 'N/A' : formData.platform || 'N/A'}
@@ -301,5 +344,4 @@ const SellCoupon = () => {
     </div>
   );
 };
-
 export default SellCoupon;
