@@ -24,14 +24,6 @@ const SuccessPage = () => {
         <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8">
           Your coupon is now live in the marketplace.
         </p>
-
-        {/* Coupon Details */}
-        <div className="bg-amber-50 p-4 sm:p-5 rounded-lg mb-6 sm:mb-8 border border-amber-100">
-          <p className="text-gray-700 text-sm sm:text-base md:text-lg">
-            ₹50 Paytm Coupon | Listed for ₹40
-          </p>
-        </div>
-
         {/* CTA Button */}
         <button
           onClick={handleViewListing}
