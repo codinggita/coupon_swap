@@ -10,7 +10,6 @@ import {
   Menu,
   X,
 } from "lucide-react";
-
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,23 +23,19 @@ const Navbar = () => {
       "/account": "account",
       "/faq": "faq",
       "/about": "about",
+      "/notifications": "notifications" 
     };
     return pathMap[pathname] || "home";
   };
-  
   const [activeTab, setActiveTab] = useState(getActiveTab(location.pathname));
-
-  
   useEffect(() => {
     setActiveTab(getActiveTab(location.pathname));
   }, [location.pathname]);
-
- 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
   const handleNavigation = (tab, path) => {
     setActiveTab(tab);
     navigate(path);
-    setMobileMenuOpen(false); 
+    setMobileMenuOpen(false);
   };
   const navItems = [
     { tab: "home", label: "Home", to: "/" },
@@ -56,7 +51,6 @@ const Navbar = () => {
     { tab: "cart", icon: ShoppingCart, label: "Cart", path: "/cart" },
     { tab: "account", icon: User, label: "Account", path: "/account" },
   ];
-
   return (
     <>
       <header className="bg-white shadow-md sticky top-0 z-50">
@@ -86,20 +80,32 @@ const Navbar = () => {
               ))}
             </nav>
             <div className="hidden md:flex items-center space-x-4">
-              <button className="p-2 hover:bg-gray-100 rounded-full">
+              <button 
+                onClick={() => handleNavigation("notifications", "/notifications")}
+                className={`p-2 rounded-full transition-colors ${
+                  activeTab === "notifications" ? "bg-orange-50 text-orange-600" : "hover:bg-gray-100"
+                }`}
+              >
                 <Bell size={20} className="text-gray-600" />
               </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full">
+              <button 
+                onClick={() => handleNavigation("account", "/account")}
+                className={`p-2 rounded-full transition-colors ${
+                  activeTab === "account" ? "bg-orange-50 text-orange-600" : "hover:bg-gray-100"
+                }`}
+              >
                 <User size={20} className="text-gray-600" />
               </button>
               <button 
                 onClick={() => handleNavigation("cart", "/cart")}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className={`p-2 rounded-full transition-colors ${
+                  activeTab === "cart" ? "bg-orange-50 text-orange-600" : "hover:bg-gray-100"
+                }`}
               >
                 <ShoppingCart size={20} className="text-gray-600" />
               </button>
               <button className="px-5 py-2 text-orange-600 font-medium rounded-full hover:bg-orange-50 transition">
-              <Link to="/Login">Login</Link>
+                <Link to="/Login">Login</Link>
               </button>
               <button className="px-5 py-2 bg-orange-600 text-white font-medium rounded-full hover:bg-orange-700 transition shadow-md">
                 <Link to="/Signin">Sign Up</Link>
@@ -164,5 +170,4 @@ const Navbar = () => {
     </>
   );
 };
-
 export default Navbar;
