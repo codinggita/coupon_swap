@@ -88,7 +88,7 @@ const SellCoupon = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-200 via-yellow-100 to-orange-200 flex items-center justify-center p-4">
       <div className="w-full max-w-[360px] sm:max-w-md md:max-w-lg lg:max-w-4xl flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="w-full lg:w-1/2 bg-gradient-to-br from-orange-400 to-yellow-400 p-4 sm:p-6 flex flex-col items-center justify-center relative">
-          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-md animate-bounce-slow">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white drop-shadow-md">
             Sell Your Coupon!
           </h1>
           <p className="text-xs sm:text-sm md:text-base text-white mt-2 text-center">
@@ -142,7 +142,7 @@ const SellCoupon = () => {
                 name="sellerName"
                 value={formData.sellerName}
                 onChange={handleInputChange}
-                placeholder="e.g., John Doe"
+                placeholder="e.g., Nagesh Jagtap"
                 className="w-full p-2 sm:p-3 rounded-lg border border-orange-300 bg-orange-50 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-xs sm:text-sm outline-none"
               />
             </div>
