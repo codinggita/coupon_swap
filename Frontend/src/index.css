@@ -1,3 +1,108 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    .animate-coupon-flip {
+      animation: couponFlip 5s ease-in-out infinite;
+    }
+  
+    .animate-money-spin {
+      animation: moneySpin 4s ease-in-out infinite;
+    }
+  
+    .animate-badge-pulse {
+      animation: badgePulse 3s ease-in-out infinite;
+    }
+  
+    .animate-bg-float {
+      animation: bgFloat 6s ease-in-out infinite;
+    }
+  
+    .animate-spin-slow {
+      animation: spin 8s linear infinite;
+    }
+  
+    .animate-pulse-slow {
+      animation: pulse 4s ease-in-out infinite;
+    }
+  
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+  
+    @keyframes couponFlip {
+      0%, 100% {
+        transform: rotate(6deg) scale(1);
+      }
+      50% {
+        transform: rotate(6deg) scale(1.05) translateY(-20px);
+      }
+    }
+  
+    @keyframes moneySpin {
+      0%, 100% {
+        transform: rotate(-12deg) scale(1);
+      }
+      50% {
+        transform: rotate(-12deg) scale(1.1) translateY(-15px);
+      }
+    }
+  
+    @keyframes badgePulse {
+      0%, 100% {
+        transform: rotate(4deg) scale(1);
+      }
+      50% {
+        transform: rotate(4deg) scale(1.15);
+      }
+    }
+  
+    @keyframes bgFloat {
+      0%, 100% {
+        transform: scale(1.5) translateX(-25%) translateY(-25%);
+      }
+      50% {
+        transform: scale(1.6) translateX(-20%) translateY(-20%);
+      }
+    }
+  
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.5;
+      }
+      50% {
+        opacity: 0.8;
+      }
+    }
+  
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+
+
+  
+
+
+
+
+
+
