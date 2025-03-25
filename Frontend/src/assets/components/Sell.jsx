@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const SellCoupon = () => {
   const [formData, setFormData] = useState({
     platform: '',
@@ -23,6 +25,7 @@ const SellCoupon = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -31,8 +34,58 @@ const SellCoupon = () => {
       reader.readAsDataURL(file);
     }
   };
+
+  const validateForm = () => {
+    const requiredFields = {
+      platform: 'Platform is required',
+      couponCode: 'Coupon Code is required',
+      expiryDate: 'Expiry Date is required',
+      sellingPrice: 'Selling Price is required',
+      minimumBuyPrice: 'Minimum Buy Price is required',
+      sellerName: 'Seller Name is required'
+    };
+
+    if (formData.platform === 'Other' && !formData.customPlatform) {
+      toast.error('Custom Platform is required when selecting Other');
+      return false;
+    }
+
+    if (!formData.valueRs && !formData.valuePercent) {
+      toast.error('Either Value in ₹ or % is required');
+      return false;
+    }
+
+    if (parseFloat(formData.sellingPrice) <= 0 || parseFloat(formData.minimumBuyPrice) <= 0) {
+      toast.error('Prices must be greater than 0');
+      return false;
+    }
+
+    if (formData.valueRs && parseFloat(formData.sellingPrice) > parseFloat(formData.valueRs)) {
+      toast.error('Selling Price cannot be greater than Coupon Value');
+      return false;
+    }
+
+    for (const [field, message] of Object.entries(requiredFields)) {
+      if (!formData[field]) {
+        toast.error(message);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error('Please enter valid details. Submitting wrong information may lead to account blocking and no payment will be processed.');
+      return;
+    }
+
+    const confirmSubmission = window.confirm('Please confirm your details are correct. Submitting wrong information may lead to account blocking.');
+    if (!confirmSubmission) return;
+
     setLoading(true);
     
     const platformToSubmit = formData.platform === 'Other' ? formData.customPlatform : formData.platform;
@@ -49,32 +102,23 @@ const SellCoupon = () => {
       image: previewImage || null,
     };
 
-    if (
-      platformToSubmit &&
-      formData.couponCode &&
-      (formData.valueRs || formData.valuePercent) &&
-      formData.expiryDate &&
-      formData.sellingPrice &&
-      formData.minimumBuyPrice
-    ) {
-      try {
-        const response = await axios.post('http://localhost:5000/api/coupon', couponData, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log('Coupon listed:', response.data);
-        alert('Coupon listed successfully!');
-        navigate('/CoupenVerification');
-      } catch (error) {
-        console.error('Error listing coupon:', error);
-        alert('Failed to list coupon. Please try again.');
-      }
-    } else {
-      alert('Please fill all required fields (Value can be ₹ or %, Minimum Buy Price is required)!');
+    try {
+      const response = await axios.post('http://localhost:5000/api/coupon', couponData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Coupon listed:', response.data);
+      toast.success('Coupon listed successfully!');
+      navigate('/CoupenVerification');
+    } catch (error) {
+      console.error('Error listing coupon:', error);
+      toast.error('Failed to list coupon. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
   const calculateDiscount = () => {
     if (formData.sellingPrice && formData.valueRs) {
       const discount = Math.round((1 - formData.sellingPrice / formData.valueRs) * 100);
@@ -84,6 +128,7 @@ const SellCoupon = () => {
     }
     return 'N/A';
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-200 via-yellow-100 to-orange-200 flex items-center justify-center p-4">
       <div className="w-full max-w-[360px] sm:max-w-md md:max-w-lg lg:max-w-4xl flex flex-col lg:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
@@ -136,7 +181,9 @@ const SellCoupon = () => {
               )}
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Seller Name</label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">
+                Seller Name <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="sellerName"
@@ -144,6 +191,7 @@ const SellCoupon = () => {
                 onChange={handleInputChange}
                 placeholder="e.g., Nagesh Jagtap"
                 className="w-full p-2 sm:p-3 rounded-lg border border-orange-300 bg-orange-50 focus:ring-2 focus:ring-orange-400 focus:border-orange-400 text-xs sm:text-sm outline-none"
+                required
               />
             </div>
             <div>
@@ -251,7 +299,7 @@ const SellCoupon = () => {
             </div>
 
             <div>
-              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Description (optional)</label>
+              <label className="block text-gray-700 font-semibold text-xs sm:text-sm">Offer Details</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -341,7 +389,9 @@ const SellCoupon = () => {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
     </div>
   );
 };
+
 export default SellCoupon;

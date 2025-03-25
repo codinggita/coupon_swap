@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Tag, Clock, Filter, ArrowRight, Heart, DollarSign, CreditCard, ShoppingCart, X, ShoppingBag, Star } from 'lucide-react';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CouponPage = () => {
   const [platform, setPlatform] = useState('All');
@@ -9,22 +12,74 @@ const CouponPage = () => {
   const [favorites, setFavorites] = useState([]);
   const [purchasedCoupons, setPurchasedCoupons] = useState([]);
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState('Best Value');
+  const [sortBy, setSortBy] = useState('Newest'); 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [copiedCode, setCopiedCode] = useState(null);
-  const initialCoupons = [
-    { id: 1, platform: 'Amazon', value: 1000, price: 900, expires: '15/03/25', code: 'AMZN1000', description: '₹1000 off on shopping', category: 'Shopping', cards: 10, seller: 'Rahul S.', rating: 4.8, discount: 10 },
-    { id: 2, platform: 'Myntra', value: 700, price: 600, expires: '15/03/25', code: 'MYN700', description: '₹700 off on fashion', category: 'Shopping', cards: 145, seller: 'Priya M.', rating: 4.9, discount: 14 },
-    { id: 3, platform: 'Zingoy', value: 200, price: 150, expires: '25/03/25', code: 'ZIN200', description: '₹200 off on gift cards', category: 'Shopping', cards: 3, seller: 'Amit K.', rating: 4.7, discount: 25 },
-    { id: 4, platform: 'PhonePe', value: 100, price: 80, expires: '20/03/25', code: 'PPE100', description: '₹100 off on payments', category: 'Shopping', cards: 2, seller: 'Neha P.', rating: 4.6, discount: 20 },
-    { id: 5, platform: 'Dominos', value: 300, price: 200, expires: '25/03/25', code: 'DOM300', description: '₹300 off on pizza orders', category: 'Food & Dining', cards: 202, seller: 'Vikas R.', rating: 4.8, discount: 33 },
-    { id: 6, platform: 'BookMyShow', value: 500, price: 400, expires: '15/04/25', code: 'BMS500', description: '₹500 off on movie tickets', category: 'Entertainment', cards: 71, seller: 'Sonia L.', rating: 4.9, discount: 20 },
-  ];
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/coupon');
+        const formattedCoupons = response.data.data
+          .map((coupon, index) => ({
+            id: coupon._id,
+            platform: coupon.platform,
+            value: coupon.valueRs || (coupon.valuePercent * 10),
+            price: coupon.sellingPrice,
+            expires: new Date(coupon.expiryDate).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: '2-digit',
+              year: '2-digit'
+            }),
+            code: coupon.couponCode,
+            description: coupon.description || '',
+            category: getCategoryFromPlatform(coupon.platform),
+            cards: Math.floor(Math.random() * 200) + 1,
+            seller: coupon.sellerName,
+            rating: 4.5 + Math.random() * 0.4,
+            discount: calculateDiscount(coupon.valueRs, coupon.valuePercent, coupon.sellingPrice),
+            createdAt: new Date(coupon.createdAt) 
+          }))
+          .sort((a, b) => b.createdAt - a.createdAt); 
+        setCoupons(formattedCoupons);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching coupons:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchCoupons();
+  }, []);
+
+  const getCategoryFromPlatform = (platform) => {
+    const lowerPlatform = platform.toLowerCase();
+    if (lowerPlatform.includes('food') || lowerPlatform.includes('zomato') || lowerPlatform.includes('swiggy')) {
+      return 'Food & Dining';
+    } else if (lowerPlatform.includes('amazon') || lowerPlatform.includes('flipkart') || lowerPlatform.includes('myntra') || lowerPlatform.includes('fastrack')) {
+      return 'Shopping';
+    } else if (lowerPlatform.includes('bookmyshow') || lowerPlatform.includes('coding')) {
+      return 'Entertainment';
+    } else {
+      return 'Shopping';
+    }
+  };
+
+  const calculateDiscount = (valueRs, valuePercent, sellingPrice) => {
+    if (valueRs) {
+      return Math.round((1 - sellingPrice / valueRs) * 100);
+    } else if (valuePercent) {
+      return valuePercent;
+    }
+    return 0;
+  };
 
   const getFilteredAndSortedCoupons = () => {
-    let filtered = initialCoupons
+    let filtered = coupons
       .filter(coupon => platform === 'All' || coupon.platform === platform)
       .filter(coupon => category === 'All' || coupon.category === category)
       .filter(coupon => {
@@ -40,12 +95,18 @@ const CouponPage = () => {
       );
 
     switch(sortBy) {
-      case 'Expiring Soon': return filtered.sort((a, b) => new Date(a.expires) - new Date(b.expires));
-      case 'Newest': return filtered.sort((a, b) => b.id - a.id);
-      case 'Best Value': return filtered.sort((a, b) => (b.value - b.price) - (a.value - a.price));
-      case 'Price': return filtered.sort((a, b) => a.price - b.price);
-      case 'Rating': return filtered.sort((a, b) => b.rating - a.rating);
-      default: return filtered;
+      case 'Expiring Soon': 
+        return filtered.sort((a, b) => new Date(a.expires) - new Date(b.expires));
+      case 'Newest': 
+        return filtered.sort((a, b) => b.createdAt - a.createdAt); 
+      case 'Best Value': 
+        return filtered.sort((a, b) => (b.value - b.price) - (a.value - a.price));
+      case 'Price': 
+        return filtered.sort((a, b) => a.price - b.price);
+      case 'Rating': 
+        return filtered.sort((a, b) => b.rating - a.rating);
+      default: 
+        return filtered.sort((a, b) => b.createdAt - a.createdAt); 
     }
   };
 
@@ -62,6 +123,10 @@ const CouponPage = () => {
   const copyCode = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
+    toast.success("Coupon code copied to clipboard!", {
+      position: "top-right",
+      autoClose: 2000,
+    });
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
@@ -80,21 +145,50 @@ const CouponPage = () => {
     if (!selectedCoupon) return;
     setTimeout(() => {
       setPurchasedCoupons([...purchasedCoupons, selectedCoupon.id]);
-      alert(`Successfully purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon! Your code: ${selectedCoupon.code}`);
+      toast.success(`Successfully purchased ${selectedCoupon.platform} ₹${selectedCoupon.value} coupon!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       closePaymentModal();
     }, 1500);
   };
 
   const categoryCounts = {
-    'All': initialCoupons.length,
-    'Food & Dining': initialCoupons.filter(c => c.category === 'Food & Dining').length,
-    'Shopping': initialCoupons.filter(c => c.category === 'Shopping').length,
-    'Travel': initialCoupons.filter(c => c.category === 'Travel').length,
-    'Entertainment': initialCoupons.filter(c => c.category === 'Entertainment').length,
+    'All': coupons.length,
+    'Food & Dining': coupons.filter(c => c.category === 'Food & Dining').length,
+    'Shopping': coupons.filter(c => c.category === 'Shopping').length,
+    'Travel': coupons.filter(c => c.category === 'Travel').length,
+    'Entertainment': coupons.filter(c => c.category === 'Entertainment').length,
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+        <div className="text-2xl font-bold text-orange-600">Loading coupons...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 font-sans">
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-white py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
@@ -170,7 +264,7 @@ const CouponPage = () => {
                 <span className="font-semibold text-gray-800 text-lg">Brand</span>
               </div>
               <div className="flex flex-wrap gap-3">
-                {['All', 'Amazon', 'Myntra', 'Zingoy', 'PhonePe', 'Dominos', 'BookMyShow'].map(option => (
+                {['All', ...new Set(coupons.map(c => c.platform))].map(option => (
                   <button
                     key={option}
                     className={`px-5 py-2 rounded-full text-md font-medium transition duration-300 shadow-sm ${platform === option ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
@@ -214,9 +308,9 @@ const CouponPage = () => {
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option>Best Value</option>
-              <option>Expiring Soon</option>
               <option>Newest</option>
+              <option>Expiring Soon</option>
+              <option>Best Value</option>
               <option>Price</option>
               <option>Rating</option>
             </select>
@@ -268,7 +362,7 @@ const CouponPage = () => {
                   <div className="flex items-center gap-1">
                     <span className="text-gray-700">{coupon.seller}</span>
                     <Star size={14} className="text-yellow-400 fill-current" />
-                    <span className="text-sm text-gray-600">{coupon.rating}</span>
+                    <span className="text-sm text-gray-600">{coupon.rating.toFixed(1)}</span>
                   </div>
                 </div>
                 {purchasedCoupons.includes(coupon.id) ? (
@@ -377,7 +471,7 @@ const CouponPage = () => {
                   onClick={() => setPaymentMethod('upi')}
                 >
                   <img 
-                    src="/assets/upi-icon.png" 
+                    src="../public/upi-payment-icon.svg" 
                     alt="UPI" 
                     className="w-6 h-6"
                     onError={(e) => e.target.src = '/assets/default-payment-icon.png'}
@@ -442,7 +536,7 @@ const CouponPage = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/phonepe-logo.png" 
+                    src="../public/phonepe-icon.svg" 
                     alt="PhonePe" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
@@ -453,7 +547,7 @@ const CouponPage = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/paytm-logo.png" 
+                    src="../public/paytm-icon.svg" 
                     alt="Paytm" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
@@ -464,7 +558,7 @@ const CouponPage = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/googlepay-logo.png" 
+                    src="../public/google-pay-icon.svg" 
                     alt="Google Pay" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
