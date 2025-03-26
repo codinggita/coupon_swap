@@ -391,7 +391,7 @@ const Body = () => {
                   onClick={() => setPaymentMethod('upi')}
                 >
                   <img 
-                    src="/assets/upi-icon.png" 
+                    src="../public/upi-payment-icon.svg" 
                     alt="UPI" 
                     className="w-6 h-6"
                     onError={(e) => e.target.src = '/assets/default-payment-icon.png'}
@@ -456,7 +456,7 @@ const Body = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/phonepe-logo.png" 
+                    src="../public/phonepe-icon.svg" 
                     alt="PhonePe" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
@@ -467,7 +467,7 @@ const Body = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/paytm-logo.png" 
+                    src="../public/paytm-icon.svg" 
                     alt="Paytm" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
@@ -478,7 +478,7 @@ const Body = () => {
                   className="border border-gray-200 rounded-xl p-3 hover:bg-orange-50 transition duration-300 flex flex-col items-center"
                 >
                   <img 
-                    src="/assets/googlepay-logo.png" 
+                    src="../public/google-pay-icon.svg" 
                     alt="Google Pay" 
                     className="w-8 h-8 mb-1"
                     onError={(e) => e.target.src = '/assets/default-wallet-icon.png'}
