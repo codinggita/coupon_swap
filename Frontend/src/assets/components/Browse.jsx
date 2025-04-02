@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Tag, Clock, Filter, ArrowRight, Heart, DollarSign, CreditCard, ShoppingCart, X, ShoppingBag, Star } from 'lucide-react';
+import { Search, Tag, Clock, Filter, ArrowRight, Heart, DollarSign, CreditCard, ShoppingCart, X, ShoppingBag, Star, ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,12 +18,15 @@ const CouponPage = () => {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [copiedCode, setCopiedCode] = useState(null);
   const [coupons, setCoupons] = useState([]);
+  const [expandedCoupons, setExpandedCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/coupon');
+        const currentDate = new Date();
+        
         const formattedCoupons = response.data.data
           .map((coupon, index) => ({
             id: coupon._id,
@@ -35,6 +38,7 @@ const CouponPage = () => {
               month: '2-digit',
               year: '2-digit'
             }),
+            expiryDateRaw: new Date(coupon.expiryDate),
             code: coupon.couponCode,
             description: coupon.description || '',
             category: getCategoryFromPlatform(coupon.platform),
@@ -42,9 +46,11 @@ const CouponPage = () => {
             seller: coupon.sellerName,
             rating: 4.5 + Math.random() * 0.4,
             discount: calculateDiscount(coupon.valueRs, coupon.valuePercent, coupon.sellingPrice),
-            createdAt: new Date(coupon.createdAt) 
+            createdAt: new Date(coupon.createdAt)
           }))
-          .sort((a, b) => b.createdAt - a.createdAt); 
+          .filter(coupon => coupon.expiryDateRaw >= currentDate)
+          .sort((a, b) => b.createdAt - a.createdAt);
+          
         setCoupons(formattedCoupons);
         setLoading(false);
       } catch (error) {
@@ -79,7 +85,9 @@ const CouponPage = () => {
   };
 
   const getFilteredAndSortedCoupons = () => {
+    const currentDate = new Date();
     let filtered = coupons
+      .filter(coupon => coupon.expiryDateRaw >= currentDate)
       .filter(coupon => platform === 'All' || coupon.platform === platform)
       .filter(coupon => category === 'All' || coupon.category === category)
       .filter(coupon => {
@@ -96,7 +104,7 @@ const CouponPage = () => {
 
     switch(sortBy) {
       case 'Expiring Soon': 
-        return filtered.sort((a, b) => new Date(a.expires) - new Date(b.expires));
+        return filtered.sort((a, b) => a.expiryDateRaw - b.expiryDateRaw);
       case 'Newest': 
         return filtered.sort((a, b) => b.createdAt - a.createdAt); 
       case 'Best Value': 
@@ -112,7 +120,7 @@ const CouponPage = () => {
 
   const filteredCoupons = getFilteredAndSortedCoupons();
   const displayedCoupons = showAll ? filteredCoupons : filteredCoupons.slice(0, 6);
-  const dealOfTheDay = filteredCoupons[0];
+  const dealOfTheDay = filteredCoupons.length > 0 ? filteredCoupons[0] : null;
 
   const toggleFavorite = (id) => {
     setFavorites(favorites.includes(id) 
@@ -141,6 +149,13 @@ const CouponPage = () => {
     setPaymentMethod('card');
   };
 
+  const toggleExpandCoupon = (id) => {
+    setExpandedCoupons(prev => 
+      prev.includes(id) 
+        ? prev.filter(couponId => couponId !== id) 
+        : [...prev, id]
+    );
+  };
   const handlePurchase = () => {
     if (!selectedCoupon) return;
     setTimeout(() => {
@@ -175,7 +190,6 @@ const CouponPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 font-sans">
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -189,7 +203,6 @@ const CouponPage = () => {
         theme="light"
       />
 
-      {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-white py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -203,7 +216,6 @@ const CouponPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-12">
-        {/* Deal of the Day */}
         {dealOfTheDay && (
           <div className="relative bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-400 rounded-3xl p-8 mb-12 shadow-2xl transform hover:scale-105 transition duration-500 overflow-hidden">
             <div className="absolute inset-0 bg-opacity-30 bg-white rounded-3xl"></div>
@@ -226,7 +238,6 @@ const CouponPage = () => {
           </div>
         )}
 
-        {/* Filters */}
         <div className="bg-white bg-opacity-90 rounded-3xl shadow-xl p-8 mb-12 backdrop-blur-md">
           <div className="relative mb-8">
             <input
@@ -296,7 +307,6 @@ const CouponPage = () => {
           </div>
         </div>
 
-        {/* Results and Sorting */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900">
             Discover Amazing Deals ({filteredCoupons.length} available)
@@ -317,7 +327,6 @@ const CouponPage = () => {
           </div>
         </div>
 
-        {/* Coupons Grid with Body's Cart UI */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {displayedCoupons.map((coupon) => (
             <div 
@@ -386,12 +395,28 @@ const CouponPage = () => {
                     Buy Now
                   </button>
                 )}
+                <button
+                  onClick={() => toggleExpandCoupon(coupon.id)}
+                  className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-orange-600 transition duration-300 pt-2"
+                >
+                  <span className="text-sm font-medium">
+                    {expandedCoupons.includes(coupon.id) ? 'Hide Details' : 'Show Details'}
+                  </span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`transform transition-transform duration-300 ${expandedCoupons.includes(coupon.id) ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {expandedCoupons.includes(coupon.id) && (
+                  <div className="mt-2 p-4 bg-gray-50 rounded-lg text-sm text-gray-700 animate-fade-in">
+                    <p>{coupon.description || 'No description available'}</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Show More Button */}
         {filteredCoupons.length > 6 && (
           <div className="text-center mb-16">
             <button 
@@ -404,7 +429,6 @@ const CouponPage = () => {
           </div>
         )}
 
-        {/* Newsletter */}
         <div className="relative bg-gradient-to-r from-orange-600 to-amber-500 rounded-3xl shadow-2xl p-10 text-white text-center mb-16 overflow-hidden">
           <div className="absolute inset-0 opacity-30">
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -428,7 +452,6 @@ const CouponPage = () => {
         </div>
       </div>
 
-      {/* Payment Modal */}
       {showPaymentModal && selectedCoupon && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 relative animate-fade-in">
