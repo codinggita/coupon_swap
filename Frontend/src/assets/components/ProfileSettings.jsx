@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Settings, ChevronRight, Upload, X } from "lucide-react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom"; // Added for navigation
 const ProfileSettings = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -21,7 +21,7 @@ const ProfileSettings = () => {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [imagePreview, setImagePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate(); 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -53,7 +53,7 @@ const ProfileSettings = () => {
         setMessage({ text: "Please upload a valid image (e.g., JPG, PNG).", type: "error" });
         return;
       }
-      if (file.size > 5 * 1024 * 1024) { // Limit to 5MB
+      if (file.size > 5 * 1024 * 1024) {
         setMessage({ text: "Image size must be less than 5MB.", type: "error" });
         return;
       }
@@ -141,6 +141,19 @@ const ProfileSettings = () => {
     setMessage({ text: "Form reset.", type: "info" });
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/logout", {}, {
+        withCredentials: true,
+      });
+      // Redirect to login page
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+      setMessage({ text: "Error logging out. Please try again.", type: "error" });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 font-sans">
       <header className="bg-white bg-opacity-90 backdrop-blur-md shadow-md py-6 px-6 sticky top-0 z-50">
@@ -151,6 +164,13 @@ const ProfileSettings = () => {
             </h1>
             <p className="text-sm md:text-md text-gray-600">Update your details here.</p>
           </div>
+          {/* Added Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="bg-gradient-to-r from-orange-600 to-amber-500 text-white py-2 px-4 rounded-lg font-semibold hover:from-orange-700 hover:to-amber-600 focus:ring-2 focus:ring-orange-600 focus:outline-none transition duration-300 shadow-md"
+          >
+            Logout
+          </button>
         </div>
       </header>
 
