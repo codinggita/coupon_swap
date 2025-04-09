@@ -38,14 +38,14 @@ const Navbar = () => {
     setMobileMenuOpen(false);
   };
   const navItems = [
-    { tab: "home", label: "Home", to: "/" },
+    { tab: "home", label: "Home", to: "/home" },
     { tab: "browse", label: "Browse", to: "/browse" },
     { tab: "sell", label: "Sell", to: "/sell" },
     { tab: "faq", label: "FAQ", to: "/faq" },
     { tab: "about", label: "About Us", to: "/about" },
   ];
   const bottomNavItems = [
-    { tab: "home", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Home", path: "/" },
+    { tab: "home", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6", label: "Home", path: "/home" },
     { tab: "browse", icon: Search, label: "Browse", path: "/browse" },
     { tab: "sell", icon: Plus, label: "Sell", path: "/sell" },
     { tab: "cart", icon: ShoppingCart, label: "Cart", path: "/cart" },
@@ -136,10 +136,10 @@ const Navbar = () => {
             </div>
             <div className="pt-4 pb-3 border-t border-gray-200 px-4">
               <button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-md mb-2">
-                Sign Up
+                <Link to="/Signin">Sign Up</Link>
               </button>
               <button className="w-full text-orange-600 hover:text-orange-800 font-medium py-2 px-4">
-                Login
+                <Link to="/Login">Login</Link>
               </button>
             </div>
           </div>
