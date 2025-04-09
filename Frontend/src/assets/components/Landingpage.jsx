@@ -24,7 +24,7 @@ import {
   UserPlus,
 } from "lucide-react";
 
-const Body = () => {
+const Landingpage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlatform, setSelectedPlatform] = useState("all");
@@ -717,4 +717,4 @@ const Body = () => {
   );
 };
 
-export default Body;
+export default Landingpage;
