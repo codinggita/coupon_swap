@@ -28,7 +28,7 @@ const Login = () => {
 
       if (response.status === 200) {
         console.log('Login successful:', response.data);
-        navigate('/');
+        navigate('/home');
       }
     } catch (error) {
       if (error.response) {

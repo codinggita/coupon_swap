@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+// import Navbar from "./Navbar";
 import {
   Search,
   ShoppingBag,
@@ -99,6 +100,7 @@ const Body = () => {
   return (
     <main className="flex-grow">
       {/* Hero Section */}
+      {/* <Navbar /> */}
       <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-orange-100 via-white to-yellow-100">
         <div className="container mx-auto max-w-7xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -112,7 +114,7 @@ const Body = () => {
                 Swap Your Coupons, <span className="text-orange-600">Save More!</span>
               </h2>
               <p className="text-lg text-gray-700">
-                Trade your Google Pay, Paytm, or Flipkart & other coupons for cash or snag incredible deals.
+                Trade your Amazon, fastrack, or Flipkart & other coupons for cash or snag incredible deals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <button className="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-500 text-white font-medium rounded-full hover:from-orange-700 hover:to-amber-600 transition-all shadow-lg flex items-center justify-center gap-2">
@@ -506,3 +508,22 @@ const Body = () => {
 };
 
 export default Body;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
