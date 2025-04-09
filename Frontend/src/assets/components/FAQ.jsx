@@ -10,7 +10,7 @@ const FAQPage = () => {
   // Toggle accordion item
   const toggleAccordion = (index) => {
     setOpenIndex(openIndex === index ? null : index);
-  }
+  };
   const faqItems = [
     { category: 'Selling', question: "How do I sell a coupon?", answer: "Just log in, navigate to the ‘Sell Coupon’ section, and enter your coupon details like code, value, and expiry date. It takes less than a minute to list it for buyers!" },
     { category: 'Security', question: "Are my payments secure?", answer: "Absolutely! We use trusted payment gateways like Razorpay and Paytm to ensure your transactions are encrypted and secure. Your financial safety is our priority." },
@@ -25,7 +25,11 @@ const FAQPage = () => {
     { category: 'General', question: "How do I contact support?", answer: "Reach out via our Contact Us page or email support@couponswap.com. We’re here 24/7!" },
     { category: 'Security', question: "What if my account is hacked?", answer: "Contact us immediately. We’ll secure your account and help recover any lost funds." },
   ];
+
+  // Categories for filtering
   const categories = ['All', 'Buying', 'Selling', 'Security', 'General'];
+
+  // Filter FAQs based on search query and category
   const filteredFAQs = faqItems.filter(
     (item) =>
       (selectedCategory === 'All' || item.category === selectedCategory) &&
