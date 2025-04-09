@@ -11,6 +11,7 @@ const couponSchema = new mongoose.Schema({
   description: { type: String },
   sellerName: { type: String },
   image: { type: String },
+  SoldStatus:{type:String,enum : ['Sold','UnSold'],default : "UnSold"},
   createdAt: { type: Date, default: Date.now }
 }); // Missing closing brace was added here
 

@@ -1,4 +1,3 @@
-// SuccessPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +5,7 @@ const SuccessPage = () => {
   const navigate = useNavigate();
 
   const handleViewListing = () => {
-    navigate('/'); // Redirects to home route
+    navigate('/'); 
   };
 
   return (

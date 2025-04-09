@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
 
 import Navbar from './assets/components/Navbar.jsx';
@@ -17,29 +17,47 @@ import ProfileSettings from './assets/components/ProfileSettings.jsx';
 import Login from './assets/components/Login.jsx';
 import CoupenVerification from './assets/components/CouponVerification.jsx';
 import CoupenSuccess from './assets/components/CoupenSuccess.jsx';
+import Landingpage from './assets/components/Landingpage.jsx';
 
+function LayoutWrapper() {
+  const location = useLocation();
+
+  // ❌ Hide Navbar on "/", "/Signin", and "/Login"
+  const hideNavbarPaths = ["/", "/Signin", "/Login"];
+  const hideNavbar = hideNavbarPaths.includes(location.pathname);
+
+  const hiddenPaths = ["/", "/Signin", "/Login"];
+  const shouldHide = hiddenPaths.includes(location.pathname);
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Landingpage />} />
+        <Route path="/home" element={<Body />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/Contact" element={<Contact />} />
+        <Route path="/Signin" element={<Signin />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/FAQ" element={<FAQ />} />
+        <Route path="/Terms" element={<Terms />} />
+        <Route path="/Privacy" element={<Privacy />} />
+        <Route path="/browse" element={<Browse />} />
+        <Route path="/Sell" element={<Sell />} />
+        <Route path="/cart" element={<UserDashboard />} />
+        <Route path="/account" element={<ProfileSettings />} />
+        <Route path="/CoupenVerification" element={<CoupenVerification />} />
+        <Route path="/CoupenSuccess" element={<CoupenSuccess />} />
+      </Routes>
+      {!shouldHide && <Footer />}
+    </>
+  );
+}
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Body />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/Contact" element={<Contact/>} />
-        <Route path="/Signin" element={<Signin/>}/>
-        <Route path="/Login" element={<Login/>}/>
-        <Route path="/FAQ" element={<FAQ/>}/>
-        <Route path="/Terms" element={<Terms/>}/>
-        <Route path="/Privacy" element={<Privacy/>}/>
-        <Route path="/browse" element={<Browse/>}/>
-        <Route path="/Sell" element={<Sell/>}/>
-        <Route path="/cart" element={<UserDashboard/>}/>
-        <Route path="/account" element={<ProfileSettings/>}/>
-       <Route path="/CoupenVerification" element={<CoupenVerification/>}/>
-       <Route path="/CoupenSuccess" element={<CoupenSuccess/>}/>
-      </Routes>
-      <Footer />
+      <LayoutWrapper />
     </Router>
   );
 }
