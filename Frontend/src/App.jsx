@@ -22,7 +22,7 @@ import Landingpage from './assets/components/Landingpage.jsx';
 function LayoutWrapper() {
   const location = useLocation();
 
-  // ❌ Hide Navbar on "/", "/Signin", and "/Login"
+
   const hideNavbarPaths = ["/", "/Signin", "/Login"];
   const hideNavbar = hideNavbarPaths.includes(location.pathname);
 
