@@ -43,7 +43,7 @@ const SignUp = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/signin', {
+      const response = await axios.post('https://coupon-swap-backend.onrender.com/api/auth/signin', {
         emailPhone,
         password,
         confirmPassword,  

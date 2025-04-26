@@ -22,7 +22,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData, {
+      const response = await axios.post('https://coupon-swap-backend.onrender.com/api/auth/login', formData, {
         withCredentials: true
       });
 

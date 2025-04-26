@@ -24,7 +24,7 @@ const CouponPage = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/coupon');
+        const response = await axios.get('https://coupon-swap-backend.onrender.com/api/coupon');
         const currentDate = new Date();
         
         const formattedCoupons = response.data.data

@@ -25,7 +25,7 @@ const ProfileSettings = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/profile", {
+        const response = await axios.get("https://coupon-swap-backend.onrender.com/api/profile", {
           withCredentials: true,
         });
         const data = response.data;
@@ -102,7 +102,7 @@ const ProfileSettings = () => {
     setMessage({ text: "Saving...", type: "info" });
 
     try {
-      const response = await axios.post("http://localhost:5000/api/profile", formData, {
+      const response = await axios.post("https://coupon-swap-backend.onrender.com/api/profile", formData, {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -143,7 +143,7 @@ const ProfileSettings = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/api/logout", {}, {
+      await axios.post("https://coupon-swap-backend.onrender.com/api/logout", {}, {
         withCredentials: true,
       });
       // Redirect to login page

@@ -103,7 +103,7 @@ const SellCoupon = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/coupon', couponData, {
+      const response = await axios.post('https://coupon-swap-backend.onrender.com/api/coupon', couponData, {
         headers: {
           'Content-Type': 'application/json',
         },
