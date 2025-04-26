@@ -18,6 +18,7 @@ import Login from './assets/components/Login.jsx';
 import CoupenVerification from './assets/components/CouponVerification.jsx';
 import CoupenSuccess from './assets/components/CoupenSuccess.jsx';
 import Landingpage from './assets/components/Landingpage.jsx';
+import NotificationPage from './assets/components/NotificationPage.jsx';
 
 function LayoutWrapper() {
   const location = useLocation();
@@ -48,6 +49,7 @@ function LayoutWrapper() {
         <Route path="/account" element={<ProfileSettings />} />
         <Route path="/CoupenVerification" element={<CoupenVerification />} />
         <Route path="/CoupenSuccess" element={<CoupenSuccess />} />
+        <Route path="/notifications" element={<NotificationPage />} />
       </Routes>
       {!shouldHide && <Footer />}
     </>
